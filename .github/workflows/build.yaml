@@ -1,0 +1,48 @@
+name: Build and upload artifact
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./prepare-flatcar-sdk.sh
+        env:
+          FLATCAR_VERSION: flatcar-3033
+      - run: ./build-crio.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: crio-rootfs
+          path: crio-rootfs.tgz
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: crio-rootfs
+
+      - id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_name: crio-rootfs.tgz
+          asset_path: crio-rootfs.tgz
+          asset_content_type: application/gzip
