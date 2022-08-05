@@ -16,7 +16,7 @@ pushd sdk_container
 # Add app-crypt/gpgme to portage
 pushd src/third_party/portage-stable
   if [ ! -d "app-crypt/gpgme" ]; then
-    git am ${CHECKOUT_DIR}/0001-Add-app-crypt-gpgme.patch
+    git apply ${CHECKOUT_DIR}/0001-Add-app-crypt-gpgme.patch
   fi
 popd
 
