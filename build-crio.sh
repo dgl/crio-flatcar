@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-CRIO_VERSION_TAG="v1.23.3"
+CRIO_VERSION_TAG="v1.22.5"
 CONMON_VERSION_TAG="v2.1.3"
 RUNC_VERSION_TAG="v1.1.3"
 
