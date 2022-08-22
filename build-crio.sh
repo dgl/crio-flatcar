@@ -2,6 +2,7 @@
 set -euo pipefail
 
 CRIO_VERSION_TAG="v1.22.5"
+CRIO_PATCHES="0001-Fix-Unmasked-ProcMountType.patch"
 CONMON_VERSION_TAG="v2.1.3"
 RUNC_VERSION_TAG="v1.1.3"
 
@@ -26,6 +27,9 @@ fi
 pushd cri-o
 git fetch origin
 git checkout ${CRIO_VERSION_TAG}
+for patch in "$CRIO_PATCHES"; do
+  git apply "${CHECKOUT_DIR}/$patch"
+done
 popd
 
 if [ ! -d conmon ]; then
