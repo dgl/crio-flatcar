@@ -1,0 +1,47 @@
+From 9506d714be7328d37e46ea8402f4f4914d7acfc4 Mon Sep 17 00:00:00 2001
+From: David Leadbeater <dgl@dgl.cx>
+Date: Tue, 6 Sep 2022 05:37:49 +0000
+Subject: [PATCH] Add ListenerPath and ListenerMetadata to support seccomp
+ notify
+
+---
+ .../containers/common/pkg/seccomp/seccomp_linux.go        | 3 +++
+ vendor/github.com/containers/common/pkg/seccomp/types.go  | 8 +++++---
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/vendor/github.com/containers/common/pkg/seccomp/seccomp_linux.go b/vendor/github.com/containers/common/pkg/seccomp/seccomp_linux.go
+index af36b9990..97e1c2000 100644
+--- a/vendor/github.com/containers/common/pkg/seccomp/seccomp_linux.go
++++ b/vendor/github.com/containers/common/pkg/seccomp/seccomp_linux.go
+@@ -113,6 +113,9 @@ func setupSeccomp(config *Seccomp, rs *specs.Spec) (*specs.LinuxSeccomp, error)
+ 	newConfig.DefaultAction = specs.LinuxSeccompAction(config.DefaultAction)
+ 	newConfig.DefaultErrnoRet = config.DefaultErrnoRet
+ 
++	newConfig.ListenerPath = config.ListenerPath
++	newConfig.ListenerMetadata = config.ListenerMetadata
++
+ Loop:
+ 	// Loop through all syscall blocks and convert them to libcontainer format after filtering them
+ 	for _, call := range config.Syscalls {
+diff --git a/vendor/github.com/containers/common/pkg/seccomp/types.go b/vendor/github.com/containers/common/pkg/seccomp/types.go
+index 07751f729..0e9ec65b7 100644
+--- a/vendor/github.com/containers/common/pkg/seccomp/types.go
++++ b/vendor/github.com/containers/common/pkg/seccomp/types.go
+@@ -10,9 +10,11 @@ type Seccomp struct {
+ 	DefaultErrnoRet *uint  `json:"defaultErrnoRet,omitempty"`
+ 	// Architectures is kept to maintain backward compatibility with the old
+ 	// seccomp profile.
+-	Architectures []Arch         `json:"architectures,omitempty"`
+-	ArchMap       []Architecture `json:"archMap,omitempty"`
+-	Syscalls      []*Syscall     `json:"syscalls"`
++	Architectures    []Arch         `json:"architectures,omitempty"`
++	ArchMap          []Architecture `json:"archMap,omitempty"`
++	Syscalls         []*Syscall     `json:"syscalls"`
++	ListenerPath     string         `json:"listenerPath,omitempty"`
++	ListenerMetadata string         `json:"listenerMetadata,omitempty"`
+ }
+ 
+ // Architecture is used to represent a specific architecture
+-- 
+2.34.1
+
